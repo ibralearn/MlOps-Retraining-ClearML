@@ -1,0 +1,65 @@
+# ============================================================
+# ClearML Agents locaux — Docker Compose
+# ============================================================
+# Agent 1 : écoute la queue "default"   (exécute les steps de la pipeline)
+# Agent 2 : écoute la queue "controller" (exécute le contrôleur de pipeline)
+#
+# Usage :
+#   1. Remplir le fichier .env avec vos clés API ClearML
+#   2. docker compose up -d
+#   3. docker compose logs -f   (pour suivre les logs)
+#   4. docker compose down      (pour arrêter)
+# ============================================================
+
+services:
+  # ── Agent 1 : queue "default" ──────────────────────────────
+  agent-default:
+    image: clearml-agent-local:py311
+    container_name: clearml-agent-default
+    entrypoint: ["clearml-agent"]
+    restart: unless-stopped
+    working_dir: /workspace
+    env_file: .env
+    environment:
+      - CLEARML_WORKER_NAME=agent-default-local
+      - CLEARML_AGENT_SKIP_PIP_VENV_INSTALL=1
+      - CLEARML_AGENT_SKIP_PYTHON_ENV_INSTALL=1
+      - CLEARML_AGENT_GIT_USER=
+      - CLEARML_AGENT_GIT_PASS=
+    volumes:
+      - .:/workspace:rw
+      - ./clearml.conf:/root/clearml.conf:ro
+      - clearml-agent-default-data:/root/.clearml
+    command: ["daemon", "--queue", "default", "--create-queue", "--foreground"]
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  # ── Agent 2 : queue "controller" ───────────────────────────
+  agent-controller:
+    image: clearml-agent-local:py311
+    container_name: clearml-agent-controller
+    entrypoint: ["clearml-agent"]
+    restart: unless-stopped
+    working_dir: /workspace
+    env_file: .env
+    environment:
+      - CLEARML_WORKER_NAME=agent-controller-local
+      - CLEARML_AGENT_SKIP_PIP_VENV_INSTALL=1
+      - CLEARML_AGENT_SKIP_PYTHON_ENV_INSTALL=1
+      - CLEARML_AGENT_GIT_USER=
+      - CLEARML_AGENT_GIT_PASS=
+    volumes:
+      - .:/workspace:rw
+      - ./clearml.conf:/root/clearml.conf:ro
+      - clearml-agent-controller-data:/root/.clearml
+    command: ["daemon", "--queue", "controller", "--create-queue", "--foreground"]
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+volumes:
+  clearml-agent-default-data:
+  clearml-agent-controller-data:

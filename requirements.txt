@@ -1,0 +1,9 @@
+clearml>=1.16
+clearml-agent>=1.16
+gradio>=4
+torch>=2.2
+torchvision>=0.17
+pillow>=10
+tqdm>=4.66
+python-dotenv>=1.0
+

@@ -1,0 +1,12 @@
+# Secrets
+.env
+clearml.conf
+
+# Données et fichiers générés
+cifar10_data/
+mlops_feedback/
+output/
+tmp/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

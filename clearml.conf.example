@@ -1,0 +1,54 @@
+# Copier ce fichier en clearml.conf (monté dans les agents par docker-compose.yml).
+# Les valeurs ${...} sont lues dans le fichier .env.
+api {
+    api_server: ${CLEARML_API_HOST}
+    web_server: ${CLEARML_WEB_HOST}
+    files_server: ${CLEARML_FILES_HOST}
+    credentials {
+        access_key: ${CLEARML_API_ACCESS_KEY}
+        secret_key: ${CLEARML_API_SECRET_KEY}
+    }
+}
+
+agent {
+    worker_name: "local-docker-agent"
+
+    package_manager {
+        type: pip
+        system_site_packages: true
+        force_upgrade: false
+    }
+
+    venvs_dir: /root/.clearml/venvs-builds
+    venvs_cache {
+        max_entries: 10
+        free_space_threshold_gb: 2.0
+        path: /root/.clearml/venvs-cache
+    }
+
+    vcs_cache {
+        enabled: true
+        path: /root/.clearml/vcs-cache
+    }
+
+    pip_download_cache {
+        enabled: true
+        path: /root/.clearml/pip-download-cache
+    }
+
+    # L'agent tourne déjà dans un conteneur : pas de Docker-in-Docker
+    default_docker {
+        image: ""
+    }
+}
+
+sdk {
+    storage {
+        cache {
+            default_base_dir: /root/.clearml/cache
+        }
+    }
+    development {
+        default_output_uri: ""
+    }
+}
